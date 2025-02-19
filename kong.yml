@@ -1,0 +1,28 @@
+_format_version: "3.9"
+_transform: true
+
+# services:
+# - name: httpbin-service
+#   url: http://httpbin:80/anything # Use httpbin container name
+#   routes:
+#   - name: httpbin-route
+#     paths:
+#     - /get
+
+# - name: second-demo
+#   url: https://mockbin.org/request
+#   routes:
+#   - name: second-demo-route
+#     paths:
+#     - /demo2
+
+plugins:
+- name: rate-limiting
+  config:
+    limit_by: service
+    hour: 100
+    policy: redis
+    redis:
+      host: redis # Use redis container name
+      port: 6379
+      password: A-SUPER-STRONG-DEMO-PASSWORD

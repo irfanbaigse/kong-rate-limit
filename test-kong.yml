@@ -1,0 +1,51 @@
+services:
+  kong:
+    image: kong:latest
+    # command: "kong migrations bootstrap"
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "5432:5432"
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=host.docker.internal
+      - KONG_PG_PORT=5432
+      - KONG_PG_PASSWORD=
+      - KONG_PG_USER=irfan.baig
+      - KONG_PG_DATABASE=test
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001
+      - KONG_PROXY_LISTEN=0.0.0.0:8000
+      - KONG_CLUSTER_LISTEN=0.0.0.0:7946
+      - KONG_CLUSTER_ADVERTISE=kong:7946 # Or Docker host IP if not using Docker network DNS
+    volumes:
+      - ./kong.yml:/etc/kong/kong.yml  # Mount the Kong configuration file
+    networks:
+      - kong-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=A-SUPER-STRONG-DEMO-PASSWORD
+    networks:
+      - kong-network
+    volumes:
+        - redis_data:/data
+
+
+  httpbin:
+    image: kennethreitz/httpbin
+    ports:
+      - "8090:80"
+    networks:
+      - kong-network
+
+networks:
+  kong-network:
+
+volumes:
+  redis_data:
