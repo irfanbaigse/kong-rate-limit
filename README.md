@@ -7,24 +7,21 @@
 ##  Create a service 
 ```bash
 curl -i -X POST "http://localhost:8001/services/" \
- --data-urlencode "name=httpbin" \ 
- --data-urlencode "url=http://httpbin.org"
+ --data-urlencode "name=httpbin" --data-urlencode "url=http://httpbin.org"
 ```
 
 ## Create a route
 
 ```bash
 curl -i -X POST "http://localhost:8001/services/httpbin/routes" \
- --data-urlencode "name=httpbin" \ 
- --data-urlencode "paths[]=/httpbin" 
+ --data-urlencode "name=httpbin" --data-urlencode "paths[]=/httpbin" 
 ```
 
 ## Add  Rate Limiting Plugin Configuration 
 
 ```bash
-curl -i -X POST "http://localhost:8001/plugins" \ 
---data-urlencode "name=rate-limiting" \ 
---data-urlencode "config.minute=5"
+curl -i -X POST "http://localhost:8001/plugins" \
+--data-urlencode "name=rate-limiting" --data-urlencode "config.minute=5"
 ```
 
 

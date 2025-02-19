@@ -1,23 +1,38 @@
 services:
+  kong-migration:
+    image: kong:latest
+    command: "kong migrations bootstrap"
+    ports:
+      - "5432:5432"
+    networks:
+      - kong-network
+    restart: on-failure
+    environment:
+      - KONG_PG_HOST=host.docker.internal
+      - KONG_PG_PASSWORD=
+      - KONG_PG_USER=irfan.baig
+
   kong:
     image: kong:latest
+    restart: always
     # command: "kong migrations bootstrap"
     depends_on:
+      - kong-migration
       - redis
     ports:
-      - "8000:8000"
+      - "8000:8000" # 8000 and 8443 are the ports to the API gateway
+      - "8001:8001" # 8001 and 8444 are the ports to the Admin API
       - "8443:8443"
-      - "8001:8001"
-      - "5432:5432"
     environment:
       - KONG_DATABASE=postgres
       - KONG_PG_HOST=host.docker.internal
       - KONG_PG_PORT=5432
       - KONG_PG_PASSWORD=
       - KONG_PG_USER=irfan.baig
-      - KONG_PG_DATABASE=test
+      - KONG_PG_DATABASE=kong
       - KONG_ADMIN_LISTEN=0.0.0.0:8001
       - KONG_PROXY_LISTEN=0.0.0.0:8000
+#    - KONG_ADMIN_LISTEN: '0.0.0.0:8001, 0.0.0.0:8444 ssl'
       - KONG_CLUSTER_LISTEN=0.0.0.0:7946
       - KONG_CLUSTER_ADVERTISE=kong:7946 # Or Docker host IP if not using Docker network DNS
     volumes:
@@ -34,7 +49,7 @@ services:
     networks:
       - kong-network
     volumes:
-        - redis_data:/data
+      - redis_data:/data
 
 
   httpbin:
