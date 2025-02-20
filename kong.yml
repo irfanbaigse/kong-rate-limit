@@ -1,13 +1,13 @@
-_format_version: "3.9"
+_format_version: "3.0"
 _transform: true
 
-# services:
-# - name: httpbin-service
-#   url: http://httpbin:80/anything # Use httpbin container name
-#   routes:
-#   - name: httpbin-route
-#     paths:
-#     - /get
+services:
+ - name: httpbin
+   url: http://httpbin:80/anything # Use httpbin container name
+   routes:
+   - name: httpbin
+     paths:
+     - /httpbin
 
 # - name: second-demo
 #   url: https://mockbin.org/request
@@ -17,12 +17,34 @@ _transform: true
 #     - /demo2
 
 plugins:
-- name: rate-limiting
-  config:
-    limit_by: service
-    hour: 100
-    policy: redis
-    redis:
-      host: redis # Use redis container name
-      port: 6379
-      password: A-SUPER-STRONG-DEMO-PASSWORD
+  - name: rate-limiting
+    config:
+      limit_by: service
+      hour: 100
+      policy: redis
+      redis:
+        host: redis # Use redis container name
+        port: 6379
+#  - name: key-auth
+#    service: httpbin
+#  - name: jwt
+#    service: httpbin
+#    config:
+#      run_on_preflight: true  # Ensures JWT is processed on preflight requests
+#  - name: pre-function
+#    service: httpbin
+#    config:
+#      access:
+#        - |
+#          local jwt = require "resty.jwt"
+#          local auth_header = ngx.var.http_authorization
+#          if auth_header and auth_header:find("Bearer ") then
+#              local token = auth_header:sub(8)  -- Remove "Bearer " prefix
+#              local decoded = jwt:load_jwt(token)
+#
+#              if decoded and decoded.payload and decoded.payload.apikey then
+#                  -- Set extracted API key as a request header
+#                  ngx.req.set_header("apikey", decoded.payload.apikey)
+#              end
+#          end
+
